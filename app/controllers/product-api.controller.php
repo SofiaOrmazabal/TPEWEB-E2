@@ -32,14 +32,14 @@ class ProductApiController {
                 $this->view->response("No existe esa columna en la base de datos", 404);
             }
         }
-        // if ($filterby){
-        //     if (strtolower($_GET['filterby']) == "id_product" || strtolower($_GET['filterby']) == "description" || strtolower($_GET['filterby']) == "price" || strtolower($_GET['filterby']) == "size" || strtolower($_GET['filterby']) == "id_category" || strtolower($_GET['filterby']) == "namecategory" ){
-        //         $filterby = $_GET['filterby'];
-        //     } else {
-        //         $filterby = null;
-        //         $this->view->response("No existe esa columna en la base de datos", 404);
-        //     }
-        // }
+        if ($filterby){
+            if (strtolower($_GET['filterby']) == "id_product" || strtolower($_GET['filterby']) == "description" || strtolower($_GET['filterby']) == "price" || strtolower($_GET['filterby']) == "size" || strtolower($_GET['filterby']) == "id_category" || strtolower($_GET['filterby']) == "namecategory" ){
+                $filterby = $_GET['filterby'];
+            } else {
+                $filterby = null;
+                $this->view->response("No existe esa columna en la base de datos", 404);
+            }
+        }
         if ($order){
             if ($order === "asc" || $order === "desc"){
                 $order = $_GET['order'];
@@ -55,7 +55,7 @@ class ProductApiController {
             }
         }    
 
-        $params = $this->modelProduct->getAllProducts($column, $mark, $valueFilter, $order, $limit, $page);
+        $params = $this->modelProduct->getAllProducts($filterby, $mark, $valueFilter, $column, $order, $limit, $page);
 
         if($params){
             return $this->view->response($params, 200);

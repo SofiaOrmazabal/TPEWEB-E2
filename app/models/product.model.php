@@ -7,28 +7,20 @@ class ProductModel {
     function __construct() {
         $this->db = new PDO('mysql:host=localhost;'.'dbname=bd_tiendaropa;charset=utf8', 'root', '');
     }
-    function getAllProducts($column, $mark, $filter, $order, $limit, $page) {
+    function getAllProducts($filterby, $mark, $filter, $column, $order, $limit, $page) {
         $params = [];
         $query = "SELECT * FROM product JOIN category ON product.id_category = category.id_category";
-        if($column != null && $filter != null){
+        
+        if($filterby != null && $filter != null){
             if ($mark == null){
-                $query .= " WHERE  $column = ?"; 
+                $query .= " WHERE  $filterby = ?"; 
                 array_push($params, $filter);
             } else{
-                $query .= " WHERE $column $mark ?";
+                $query .= " WHERE $filterby $mark ?";
                 array_push($params, $filter);
             }     
         }
-        // if($filterby != null && $filter != null){
-        //     if ($mark == null){
-        //         $query .= " WHERE  $filterby = ?"; 
-        //         array_push($params, $filter);
-        //     } else{
-        //         $query .= " WHERE $filterby $mark ?";
-        //         array_push($params, $filter);
-        //     }     
-        // }
-        if($column != null && $filter == null){
+        if($column != null){
             var_dump("la columna" . $column);
             $query .= " ORDER BY $column $order";
         }
