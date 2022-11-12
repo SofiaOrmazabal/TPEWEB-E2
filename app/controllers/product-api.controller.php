@@ -7,59 +7,64 @@ class ProductApiController {
     private $modelProduct;
     private $modelCategory;
     private $view;
-
     private $data;
 
     public function __construct() {
         $this->modelProduct = new ProductModel();
         $this->modelCategory = new CategoryModel();
         $this->view = new ApiView();
-        
         $this->data = file_get_contents("php://input");
     }
-    public function getProducts($params = null) {
-        $order =  null;
-        $direction = null;
-        $filter = null;
-        $value = null;
-        $mark = null;
-        if (isset($_GET['sort'])) {
-            $order = $_GET['sort'];
-            if (isset($_GET['order'])) {
-                $direction = $_GET['order']; 
+    public function getProducts() {
+        $column = $_GET['column'] ?? null;
+        $order = $_GET['order'] ?? null;
+        $limit = $_GET['limit'] ?? null;
+        $page =  $_GET['page'] ?? null;
+        $mark = $_GET['mark'] ?? null;
+        $filterby = $_GET['mark'] ?? null;
+        $valueFilter = $_GET['value'] ?? null;
+        
+        if ($column){
+            if (strtolower($_GET['column']) == "id_product" || strtolower($_GET['column']) == "description" || strtolower($_GET['column']) == "price" || strtolower($_GET['column']) == "size" || strtolower($_GET['column']) == "id_category" || strtolower($_GET['column']) == "namecategory" ){
+                $column = $_GET['column'];
+            } else {
+                $column = null;
+                $this->view->response("No existe esa columna en la base de datos", 404);
             }
-            if (($order === 'id_product')||($order === 'description')||($order === 'price')||($order === 'size')||($order === 'id_category')||($order === 'nameCategory')){
-                $products = $this->modelProduct->getAllOrderBy($order, $direction);
-                $this->view->response($products, 200);
-            } else{
-                
-                $this->view->response("La categoría insertada no existe ", 404);
+        }
+        // if ($filterby){
+        //     if (strtolower($_GET['filterby']) == "id_product" || strtolower($_GET['filterby']) == "description" || strtolower($_GET['filterby']) == "price" || strtolower($_GET['filterby']) == "size" || strtolower($_GET['filterby']) == "id_category" || strtolower($_GET['filterby']) == "namecategory" ){
+        //         $filterby = $_GET['filterby'];
+        //     } else {
+        //         $filterby = null;
+        //         $this->view->response("No existe esa columna en la base de datos", 404);
+        //     }
+        // }
+        if ($order){
+            if ($order === "asc" || $order === "desc"){
+                $order = $_GET['order'];
+            }else {
+                $order = null;  
+                $this->view->response("El dato ingresado no es una forma de ordenamiento valida, por lo que se ordenará de la forma predeterminada");
             }
-        }else if (isset($_GET['filter'])) {
-            $filter = $_GET['filter'];
-            if (isset($_GET['value'])) {
-                $value = $_GET['value']; 
+        }
+        if ($mark){
+            if ($mark != ">" && $mark != "<" && $mark != "<=" && $mark != ">=" && $mark != '='){
+                $mark = null;  
+                $this->view->response("El dato ingresado no es un símbolo valido, por lo que se filtrará igualando ('=')");
             }
-            if (isset($_GET['mark'])) {
-                $mark = $_GET['mark']; 
-            }        
-            if (($filter === 'id_product')||($filter === 'description')||($filter === 'price')||($filter === 'size')||($filter === 'id_category')||($filter === 'nameCategory')){
-                $products = $this->modelProduct->getProductsByFilter($filter, $mark,$value);
-                $this->view->response($products, 200);
-            } else{
-                
-                $this->view->response("La categoría insertada no existe ", 404);
-            }
+        }    
+
+        $params = $this->modelProduct->getAllProducts($column, $mark, $valueFilter, $order, $limit, $page);
+
+        if($params){
+            return $this->view->response($params, 200);
         }else{
-            $products = $this->modelProduct->getAllProducts();
-            if ($products){
-                $this->view->response($products, 200);
-                
-            } else{
-                $this->view->response("No existen productos en la base de datos", 204);
-            } 
-        }       
-    }
+            $this->view->response("No hay productos en la base de datos que coincidan", 404);
+        }
+        
+            
+     }              
     
     public function getProduct($params = null) {
         $id = $params[':ID'];
@@ -106,8 +111,4 @@ class ProductApiController {
             
         }
     }
-    
-
-    
-
 }
