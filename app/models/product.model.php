@@ -25,14 +25,13 @@ class ProductModel {
             $query .= " ORDER BY $column $order";
         }
         if($page == null){
-            $page=0;
+            $page=1;
         }
         if($limit != null){
             $offset = $page * $limit - $limit;
             $query .= " LIMIT  $limit OFFSET $offset";
         }
         $query = $this->db->prepare($query);
-        var_dump($query);
         $query->execute($params);
         $products = $query->fetchAll(PDO::FETCH_OBJ); 
         return $products;
