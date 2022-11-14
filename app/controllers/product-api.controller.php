@@ -30,6 +30,7 @@ class ProductApiController {
             } else {
                 $column = null;
                 $this->view->response("No existe esa columna en la base de datos", 404);
+                die(); 
             }
         }
         if ($filterby){
@@ -38,20 +39,23 @@ class ProductApiController {
             } else {
                 $filterby = null;
                 $this->view->response("No existe esa columna en la base de datos", 404);
+                die(); 
             }
         }
         if ($order){
             if ($order === "asc" || $order === "desc"){
                 $order = $_GET['order'];
             }else {
-                $order = null;  
-                $this->view->response("El dato ingresado no es una forma de ordenamiento valida, por lo que se ordenará de la forma predeterminada");
+                $order = null; 
+                $this->view->response("El dato ingresado no es una forma de ordenamiento valida, por favor ingrece 'asc' o 'desc' ", 404);
+                die(); 
             }
         }
         if ($mark){
             if ($mark != ">" && $mark != "<" && $mark != "<=" && $mark != ">=" && $mark != '='){
                 $mark = null;  
-                $this->view->response("El dato ingresado no es un símbolo valido, por lo que se filtrará igualando ('=')");
+                $this->view->response("El dato ingresado no es un símbolo valido, por favor ingrese '>', '<', '=', '>=' o '<=' ", 404);
+                die();
             }
         }    
 
@@ -61,9 +65,7 @@ class ProductApiController {
             return $this->view->response($params, 200);
         }else{
             $this->view->response("No hay productos en la base de datos que coincidan", 404);
-        }
-        
-            
+        } 
      }              
     
     public function getProduct($params = null) {
@@ -92,7 +94,7 @@ class ProductApiController {
     public function insertProduct() {
         $product = $this->getData();
         if (empty($product->description) || empty($product->price) || empty($product->size)|| empty($product->id_category)) {
-            $this->view->response("Complete los datos", 400);
+            $this->view->response("Por favor, complete todos los datos", 400);
         } else {
             $categories = $this->modelCategory->getAllCategories();
 
