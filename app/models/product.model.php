@@ -34,7 +34,6 @@ class ProductModel {
             }     
         }
         if($column != null){
-            var_dump("la columna" . $column);
             $query .= " ORDER BY $column $order";
         }
         if($page == null){
