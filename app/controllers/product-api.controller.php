@@ -15,33 +15,47 @@ class ProductApiController {
         $this->view = new ApiView();
         $this->data = file_get_contents("php://input");
     }
+
     public function getProducts() {
         $column = $_GET['column'] ?? null;
         $order = $_GET['order'] ?? null;
         $limit = $_GET['limit'] ?? null;
         $page =  $_GET['page'] ?? null;
         $mark = $_GET['mark'] ?? null;
-        $filterby = $_GET['mark'] ?? null;
+        $filterby = $_GET['filterby'] ?? null;
         $valueFilter = $_GET['value'] ?? null;
         
-        if ($column){
-            if (strtolower($_GET['column']) == "id_product" || strtolower($_GET['column']) == "description" || strtolower($_GET['column']) == "price" || strtolower($_GET['column']) == "size" || strtolower($_GET['column']) == "id_category" || strtolower($_GET['column']) == "namecategory" ){
-                $column = $_GET['column'];
+        if ($column != null ){
+            $columns =  $this->modelProduct->getColumns();
+            $setted = false;
+            foreach ($columns as $columnName){
+                if ($column === $columnName){
+                    $setted = true;
+                } 
+            }
+            if ($setted == true){
+                $column;
             } else {
-                $column = null;
                 $this->view->response("No existe esa columna en la base de datos", 404);
-                die(); 
+                die();
             }
         }
-        if ($filterby){
-            if (strtolower($_GET['filterby']) == "id_product" || strtolower($_GET['filterby']) == "description" || strtolower($_GET['filterby']) == "price" || strtolower($_GET['filterby']) == "size" || strtolower($_GET['filterby']) == "id_category" || strtolower($_GET['filterby']) == "namecategory" ){
-                $filterby = $_GET['filterby'];
+        if ($filterby != null){
+            $columns =  $this->modelProduct->getColumns();
+            $setted = false;
+            foreach ($columns as $columnName){
+                if ($filterby === $columnName){
+                    $setted = true;
+                } 
+            }
+            if ($setted == true){
+                $filterby;
             } else {
-                $filterby = null;
                 $this->view->response("No existe esa columna en la base de datos", 404);
-                die(); 
+                die();
             }
         }
+        
         if ($order){
             if ($order === "asc" || $order === "desc"){
                 $order = $_GET['order'];
@@ -63,10 +77,11 @@ class ProductApiController {
 
         if($params){
             return $this->view->response($params, 200);
+            
         }else{
             $this->view->response("No hay productos en la base de datos que coincidan", 404);
         } 
-     }              
+     }   
     
     public function getProduct($params = null) {
         $id = $params[':ID'];

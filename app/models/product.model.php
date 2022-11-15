@@ -7,6 +7,19 @@ class ProductModel {
     function __construct() {
         $this->db = new PDO('mysql:host=localhost;'.'dbname=bd_tiendaropa;charset=utf8', 'root', '');
     }
+
+    function getColumns(){
+        $columns = array();
+        $query = $this->db->prepare("SHOW COLUMNS FROM product");
+        $query->execute();
+        $columnsName = $query->fetchAll(PDO::FETCH_OBJ);
+        foreach ($columnsName as $column) {
+            $columnName = $column->Field;
+            array_push($columns, $columnName);     
+        }
+        return $columns;   
+    }
+
     function getAllProducts($filterby, $mark, $filter, $column, $order, $limit, $page) {
         $params = [];
         $query = "SELECT * FROM product JOIN category ON product.id_category = category.id_category";
